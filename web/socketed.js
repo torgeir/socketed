@@ -77,7 +77,7 @@
       default:
         break;
     }
-  }
+  }                                        
 
   $(document).mousemove(function(event) {
      conn.send('{ "pos": { "x": ' + event.clientX + ', "y": ' + event.clientY + ' } }');
