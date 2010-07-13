@@ -1,6 +1,3 @@
-[submodule "vendor/tnode"]
-	path = vendor/tnode
-	url = git@github.com:torgeir/tnode.git
 [submodule "vendor/node-websocket-server"]
 	path = vendor/node-websocket-server
 	url = http://github.com/miksago/node-websocket-server.git
