@@ -19,28 +19,24 @@ server.addListener('listening', function() {
 });                                    
 
 var clients = {};
+
 server.addListener('close', function(conn) {
   conn.broadcast(JSON.stringify( { d: { id: conn.id } } ));
   delete clients[conn.id];
 });
+
 server.addListener('connection', function(conn) {
                  
   server.send(conn.id, JSON.stringify({
     m: 'connected as ' + conn.id
   }));
 
-  clients[conn.id] = 1;
   for(var id in clients) {
-    if(id != conn.id) {             
-      server.send(conn.id, JSON.stringify( { u: { id: id } } ));
-    }
+    server.send(conn.id, JSON.stringify( { u: { id: id } } ));
   }
+  clients[conn.id] = 1;
 
-  conn.broadcast(JSON.stringify({
-    u: {
-      id: conn.id
-    }
-  }));
+  conn.broadcast(JSON.stringify( { u: {id: conn.id } } ));
   
   conn.addListener('message', function(message) {
     try {
