@@ -52,6 +52,7 @@ server.addListener('connection', function(conn) {
 });                 
 
 server.addListener('close', function(conn) {
+  conn.broadcast(JSON.stringify( { m: 'User disconnected ' + conn.id } ));        
   conn.broadcast(JSON.stringify( { d: { id: conn.id } } ));
   delete clients[conn.id];
 });
