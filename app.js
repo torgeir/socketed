@@ -12,67 +12,48 @@ var httpServer = t.app({
   }
 });
 
-var server = ws.createServer({}, httpServer);
-
-server.addListener('listening', function() {
-  sys.puts('Websocketserver listening!');  
-});                                    
-
 var clients = {};
-
-server.addListener('close', function(conn) {
-  conn.broadcast(JSON.stringify( { d: { id: conn.id } } ));
-  delete clients[conn.id];
-});
-
+var server = ws.createServer({}, httpServer);
 server.addListener('connection', function(conn) {
-                 
-  server.send(conn.id, JSON.stringify({
-    m: 'connected as ' + conn.id
-  }));
+         
+  server.send(conn.id, JSON.stringify({ m: 'You connected as ' + conn.id }));
 
   for(var id in clients) {
     server.send(conn.id, JSON.stringify( { u: { id: id } } ));
-  }
-  clients[conn.id] = 1;
+  }                   
+  
+  clients[conn.id] = {};
 
-  conn.broadcast(JSON.stringify( { u: {id: conn.id } } ));
+  conn.broadcast(JSON.stringify( { u: { id: conn.id } } ));
   
   conn.addListener('message', function(message) {
-    try {
       var json = JSON.parse(message);
       
       for(var key in json) {
         var data = json[key];
-      
-        switch(key) {
+        
+        switch(key) {          
+          
+          case 'pos':
+            conn.broadcast(JSON.stringify({ 
+              c: { id: conn.id, pos: data }
+            }));
+            break;            
+            
           case 'm':
             sys.puts(conn.id + ': ' + data);
             break;
             
-          case 'pos':
-            conn.broadcast(JSON.stringify({ 
-              c: {
-                id: conn.id,
-                pos: {
-                  x: data.x,
-                  y: data.y
-                }
-              }
-            }));
-          
-            break;
-            
-          default:
-            sys.puts('uh, i dont understand: ' + key + '( ' + data + ' )');
+          default:      
             break;
         }
       }
-    } catch(e) {
-      sys.puts('ah, this caused an error, i dont understand: ' + message);
-    }
-  });
-  
+  });  
+});                 
+
+server.addListener('close', function(conn) {
+  conn.broadcast(JSON.stringify( { d: { id: conn.id } } ));
+  delete clients[conn.id];
 });
 
 server.listen(8888);
