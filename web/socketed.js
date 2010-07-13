@@ -52,7 +52,7 @@ function handle(key, data) {
 var conn;
 var connect = function() {
   if (window["WebSocket"]) {
-    conn = new WebSocket("ws://localhost:8888/");
+    conn = new WebSocket("ws://static.torgeir.at:8888/");
 
     conn.onmessage = function(evt) {
       var json = jQuery.parseJSON(evt.data);
